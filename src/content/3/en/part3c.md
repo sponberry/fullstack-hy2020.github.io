@@ -815,7 +815,7 @@ app.use(express.json())
 
 Then the JSON data sent with the HTTP requests would not be available for the logger middleware or the POST route handler, since the _request.body_ would be _undefined_ at that point.
 
-It's also important that the middleware for handling unsupported routes is next to the last middleware that is loaded into Express, just before the error handler.
+It's also important that the middleware for handling unsupported routes is the last middleware that is loaded into Express, right after the error handler.
 
 For example, the following loading order would cause an issue:
 
@@ -832,7 +832,7 @@ app.get('/api/notes', (request, response) => {
 })
 ```
 
-Now the handling of unknown endpoints is ordered <i>before the HTTP request handler</i>. Since the unknown endpoint handler responds to all requests with <i>404 unknown endpoint</i>, no routes or middleware will be called after the response has been sent by unknown endpoint middleware. The only exception to this is the error handler which needs to come at the very end, after the unknown endpoints handler.
+Now the handling of unknown endpoints is ordered <i>before the HTTP request handler</i>. Since the unknown endpoint handler responds to all requests with <i>404 unknown endpoint</i>, no routes or middleware will be called after the response has been sent by unknown endpoint middleware. According to the Express documentation, the in-built next error handler does not handle unknown endpoints, and so this middleware should come after the error handler so that it catches all 404 issues that the next() middleware doesn't deal with. http://expressjs.com/en/starter/faq.html#how-do-i-handle-404-responses
 
 ### Other operations
 
